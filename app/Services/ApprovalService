@@ -1,0 +1,284 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Project;
+use App\Models\User;
+use App\Models\ProjectApproval;
+use App\Enums\ProjectStatusEnum;
+use App\Enums\ApprovalActionEnum;
+use App\Enums\RoleEnum;
+use App\Enums\LevelEnum;
+use App\Events\ProjectStatusChanged;
+use App\Traits\HasApprovalFlow;
+
+class ApprovalService
+{
+    use HasApprovalFlow;
+
+    public function processApproval(Project $project, User $approver, string $action, ?string $notes = null): void
+    {
+        if (!$this->canApprove($project, $approver)) {
+            throw new \Exception('User tidak memiliki akses untuk melakukan approval.');
+        }
+
+        ProjectApproval::create([
+            'project_id' => $project->id,
+            'approver_id' => $approver->id,
+            'role' => $approver->role,
+            'level' => $approver->level,
+            'action' => $action,
+            'notes' => $notes,
+        ]);
+
+        switch ($action) {
+            case ApprovalActionEnum::APPROVE->value:
+                $this->handleApprove($project);
+                break;
+
+            case ApprovalActionEnum::CANCEL->value:
+                $this->handleCancel($project, $notes);
+                break;
+
+            case ApprovalActionEnum::REVISI->value:
+                $this->handleRevisi($project, $notes);
+                break;
+        }
+
+        event(new ProjectStatusChanged($project));
+    }
+
+    /**
+     * ✅ PERBAIKI: Tambahkan refresh() sebelum getNextApprover
+     */
+    private function handleApprove(Project $project): void
+    {
+        $currentStatus = ProjectStatusEnum::from($project->status);
+        $nextStatus = $currentStatus->nextStatus();
+
+        if ($nextStatus && $nextStatus !== ProjectStatusEnum::RILIS) {
+            $project->update([
+                'status' => $nextStatus->value,
+                'revisi_notes' => null,
+            ]);
+
+            // ✅ REFRESH - ambil data terbaru dari database
+            $project->refresh();
+
+            // ✅ Ambil next approver berdasarkan status BARU
+            $nextApprover = $this->getNextApprover($project);
+            
+            if ($nextApprover) {
+                $project->update(['current_approver_id' => $nextApprover->id]);
+            }
+        } else {
+            $project->update([
+                'status' => ProjectStatusEnum::RILIS->value,
+                'released_at' => now(),
+                'revisi_notes' => null,
+                'current_approver_id' => null,
+            ]);
+        }
+    }
+
+    private function handleCancel(Project $project, ?string $notes): void
+    {
+        $project->update([
+            'status' => ProjectStatusEnum::DIBATALKAN->value,
+            'revisi_notes' => $notes,
+            'current_approver_id' => null,
+        ]);
+    }
+
+    private function handleRevisi(Project $project, ?string $notes): void
+    {
+        $pelaksanaStaff = User::where('role', RoleEnum::PELAKSANA->value)
+            ->where('level', LevelEnum::STAFF->value)
+            ->where('is_active', true)
+            ->first();
+
+        $project->update([
+            'status' => ProjectStatusEnum::REVISI->value,
+            'revisi_notes' => $notes,
+            'current_approver_id' => $pelaksanaStaff?->id,
+        ]);
+    }
+
+    private function getNextApprover(Project $project): ?User
+{
+    $status = $project->status;
+
+    switch ($status) {
+        // ============================================================
+        // 1. COMERCIL FLOW
+        // ============================================================
+        case ProjectStatusEnum::REVIEW_DEPT_HEAD_COMERCIL->value:
+            return User::where('role', RoleEnum::COMERCIL->value)
+                ->where('level', LevelEnum::DEPARTMENT_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVIEW_DIVISION_HEAD_COMERCIL->value:
+            return User::where('role', RoleEnum::COMERCIL->value)
+                ->where('level', LevelEnum::DIVISION_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::MENUNGGU_PENGISIAN_PELAKSANA->value:
+            return User::where('role', RoleEnum::PELAKSANA->value)
+                ->where('level', LevelEnum::STAFF->value)
+                ->where('is_active', true)
+                ->first();
+
+        // ============================================================
+        // 2. PELAKSANA FLOW
+        // ============================================================
+        case ProjectStatusEnum::REVIEW_DEPT_HEAD_PELAKSANA->value:
+            return User::where('role', RoleEnum::PELAKSANA->value)
+                ->where('level', LevelEnum::DEPARTMENT_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVIEW_DIVISION_HEAD_PELAKSANA->value:
+            return User::where('role', RoleEnum::PELAKSANA->value)
+                ->where('level', LevelEnum::DIVISION_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVIEW_PCCM->value:
+            return User::where('role', RoleEnum::PCCM->value)
+                ->where('level', LevelEnum::STAFF->value)
+                ->where('is_active', true)
+                ->first();
+
+        // ============================================================
+        // 3. PCCM FLOW
+        // ============================================================
+        case ProjectStatusEnum::REVIEW_DEPT_HEAD_PCCM->value:
+            return User::where('role', RoleEnum::PCCM->value)
+                ->where('level', LevelEnum::DEPARTMENT_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVIEW_DIVISION_HEAD_PCCM->value:
+            return User::where('role', RoleEnum::PCCM->value)
+                ->where('level', LevelEnum::DIVISION_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVIEW_FINANCE->value:
+            return User::where('role', RoleEnum::FINANCE->value)
+                ->where('level', LevelEnum::STAFF->value)
+                ->where('is_active', true)
+                ->first();
+
+        // ============================================================
+        // 4. FINANCE FLOW
+        // ============================================================
+        case ProjectStatusEnum::REVIEW_DEPT_HEAD_FINANCE->value:
+            return User::where('role', RoleEnum::FINANCE->value)
+                ->where('level', LevelEnum::DEPARTMENT_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVIEW_DIVISION_HEAD_FINANCE->value:
+            return User::where('role', RoleEnum::FINANCE->value)
+                ->where('level', LevelEnum::DIVISION_HEAD->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVIEW_DIREKSI->value:
+            return User::where('role', RoleEnum::DIREKSI->value)
+                ->where('is_active', true)
+                ->first();
+
+        case ProjectStatusEnum::REVISI->value:
+            return User::where('role', RoleEnum::PELAKSANA->value)
+                ->where('level', LevelEnum::STAFF->value)
+                ->where('is_active', true)
+                ->first();
+
+        default:
+            return null;
+    }
+}
+
+    public function canApprove(Project $project, User $user): bool
+    {
+        // Admin bisa approve semua
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        // Cek apakah user adalah approver yang ditunjuk
+        if ($project->current_approver_id !== $user->id) {
+            return false;
+        }
+
+        if ($project->isComplete()) {
+            return false;
+        }
+
+        $status = ProjectStatusEnum::from($project->status);
+
+        // ============================================================
+        // APPROVAL RULES
+        // ============================================================
+        
+        if ($user->role === RoleEnum::COMERCIL->value && 
+            $user->level === LevelEnum::DEPARTMENT_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DEPT_HEAD_COMERCIL;
+        }
+
+        if ($user->role === RoleEnum::COMERCIL->value && 
+            $user->level === LevelEnum::DIVISION_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DIVISION_HEAD_COMERCIL;
+        }
+
+        if ($user->role === RoleEnum::PELAKSANA->value && 
+            $user->level === LevelEnum::DEPARTMENT_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DEPT_HEAD_PELAKSANA;
+        }
+
+        if ($user->role === RoleEnum::PELAKSANA->value && 
+            $user->level === LevelEnum::DIVISION_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DIVISION_HEAD_PELAKSANA;
+        }
+
+        if ($user->role === RoleEnum::PCCM->value && 
+            $user->level === LevelEnum::STAFF->value) {
+            return $status === ProjectStatusEnum::REVIEW_PCCM;
+        }
+
+        if ($user->role === RoleEnum::PCCM->value && 
+            $user->level === LevelEnum::DEPARTMENT_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DEPT_HEAD_PCCM;
+        }
+
+        if ($user->role === RoleEnum::PCCM->value && 
+            $user->level === LevelEnum::DIVISION_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DIVISION_HEAD_PCCM;
+        }
+
+        if ($user->role === RoleEnum::FINANCE->value && 
+            $user->level === LevelEnum::STAFF->value) {
+            return $status === ProjectStatusEnum::REVIEW_FINANCE;
+        }
+
+        if ($user->role === RoleEnum::FINANCE->value && 
+            $user->level === LevelEnum::DEPARTMENT_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DEPT_HEAD_FINANCE;
+        }
+
+        if ($user->role === RoleEnum::FINANCE->value && 
+            $user->level === LevelEnum::DIVISION_HEAD->value) {
+            return $status === ProjectStatusEnum::REVIEW_DIVISION_HEAD_FINANCE;
+        }
+
+        if ($user->role === RoleEnum::DIREKSI->value) {
+            return $status === ProjectStatusEnum::REVIEW_DIREKSI;
+        }
+
+        return false;
+    }
+}
