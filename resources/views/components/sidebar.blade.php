@@ -30,7 +30,8 @@
 
 
         <!-- Tambahkan menu lain sesuai role -->
-        @if(auth()->user()->role === 'comercil' && auth()->user()->level === 'staff')
+        @if((auth()->user()->role === 'comercil' && auth()->user()->level === 'staff') || auth()->user()->role ===
+        'admin')
         <a href="{{ route('project.initiate') }}"
             class="flex items-center px-4 py-3 text-gray-300 hover:bg-blue-700 rounded-lg transition {{ request()->routeIs('project.initiate') ? 'bg-gray-700 text-white' : '' }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +41,8 @@
         </a>
         @endif
 
-        @if(auth()->user()->role === 'pelaksana' && auth()->user()->level === 'staff')
+        <!-- @if((auth()->user()->role === 'comercil' && auth()->user()->level === 'staff') || auth()->user()->role ===
+        'admin')
         <a href="{{ route('dashboard') }}?status=menunggu_pengisian_pelaksana"
             class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +51,7 @@
             </svg>
             Isi Data Proyek
         </a>
-        @endif
+        @endif -->
 
         @if(auth()->user()->role === 'admin')
         <a href="{{ route('admin.users') }}"
@@ -60,7 +62,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Admin
+            Manajemen Pengguna
         </a>
         @endif
     </nav>

@@ -40,6 +40,9 @@ class ProjectPolicy
      */
     public function fill(User $user, Project $project): bool
     {
+        if ($user->role === 'admin') {
+        return true;
+        }
         return $user->role === RoleEnum::PELAKSANA->value
             && $user->level === LevelEnum::STAFF->value
             && in_array($project->status, [

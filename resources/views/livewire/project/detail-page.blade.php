@@ -26,7 +26,7 @@
                     <div class="flex flex-wrap gap-2">
 
                         @if($canFill && ($project->status === 'menunggu_pengisian_pelaksana' || $project->status ===
-                        'revisi'))
+                        'revisi') )
                         <a href="{{ route('project.fill', $project->id) }}"
                             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm flex items-center transition">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -107,7 +107,7 @@ class InitiationForm extends Component
         $user = Auth::user();
         
         // ✅ HANYA Comercil Staff yang bisa inisiasi
-        if ($user->role !== RoleEnum::COMERCIL->value || $user->level !== LevelEnum::STAFF->value) {
+        if (!($user->role === RoleEnum::COMERCIL->value && $user->level === LevelEnum::STAFF->value) && $user->role !== RoleEnum::ADMIN->value) {
             abort(403, 'Hanya Comercil Staff yang dapat menginisiasi proyek.');
         }
 

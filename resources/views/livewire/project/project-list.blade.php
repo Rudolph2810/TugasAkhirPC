@@ -247,10 +247,11 @@
                                         @endif
 
                                         <!-- ✅ TOMBOL ISI DATA - Pelaksana Staff -->
-                                        @if(($project->status === 'menunggu_pengisian_pelaksana' || $project->status ===
-                                        'revisi') &&
-                                        auth()->user()->role === 'pelaksana' &&
-                                        auth()->user()->level === 'staff')
+                                        @if((auth()->user()->role === 'pelaksana' && auth()->user()->level === 'staff'
+                                        || auth()->user()->role === 'admin') &&
+                                        ($project->status === 'menunggu_pengisian_pelaksana' || $project->status ===
+                                        'revisi'))
+
                                         <a href="{{ route('project.fill', $project->id) }}"
                                             class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition text-xs font-medium">
                                             📝 Isi Data
