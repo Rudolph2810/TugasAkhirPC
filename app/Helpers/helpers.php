@@ -46,4 +46,22 @@ if (!function_exists('get_logo')) {
         }
         return null;
     }
+
+    if (!function_exists('greeting')) {
+    function greeting()
+    {
+        $hour = now()->format('H');
+        if ($hour >= 5 && $hour < 11) {
+            return 'Selamat Pagi';
+        } elseif ($hour >= 11 && $hour < 15) {
+            return 'Selamat Siang';
+        } elseif ($hour >= 15 && $hour < 18) {
+            return 'Selamat Sore';
+        } elseif ($hour >= 18 && $hour < 24) {
+            return 'Selamat Malam';
+        } else {
+            return 'Selamat Malam'; // 00:00 - 04:59
+        }
+    }
+}
 }

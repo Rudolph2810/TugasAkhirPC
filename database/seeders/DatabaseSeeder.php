@@ -98,11 +98,11 @@ class DatabaseSeeder extends Seeder
     private function createBusinessSegments(): void
     {
         $segments = [
-            ['name' => 'Konstruksi', 'code' => 'KON'],
-            ['name' => 'Telekomunikasi', 'code' => 'TEL'],
-            ['name' => 'Energi', 'code' => 'ENG'],
-            ['name' => 'Infrastruktur', 'code' => 'INF'],
-            ['name' => 'Teknologi Informasi', 'code' => 'TI'],
+            ['name' => 'ASSET MANAGEMENT', 'code' => 'AM'],
+            ['name' => 'FACILITY MANAGEMENT', 'code' => 'AM'],
+            ['name' => 'TRANSPORTAS', 'code' => 'TR'],
+            ['name' => 'DESIGN & BUILD', 'code' => 'DB'],
+            ['name' => 'ENTREPRENEURIAL REAL ESTATE', 'code' => 'ERS'],
         ];
 
         foreach ($segments as $segment) {

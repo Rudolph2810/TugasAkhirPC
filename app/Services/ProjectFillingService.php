@@ -105,7 +105,10 @@ class ProjectFillingService
         ]);
 
         // Trigger notification
-        event(new ProjectStatusChanged($project));
+        $oldStatus = $project->status;
+    // update status...
+    event(new ProjectStatusChanged($project, $oldStatus, $project->status));
+
     }
 
     /**

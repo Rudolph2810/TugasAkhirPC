@@ -10,7 +10,7 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Profil Saya</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Profile Info -->
+                    <!-- Informasi User -->
                     <div class="bg-gray-50 rounded-lg p-6">
                         <div class="flex items-center mb-4">
                             <div
@@ -62,7 +62,7 @@
                         </div>
                     </div>
 
-                    <!-- Change Password -->
+                    <!-- Ganti Password -->
                     <div class="bg-gray-50 rounded-lg p-6">
                         <h3 class="text-lg font-semibold mb-4">Ubah Password</h3>
                         <form method="POST" action="{{ route('profile.change-password') }}">
@@ -93,7 +93,7 @@
                     </div>
                 </div>
 
-                <!-- Logout Button -->
+                <!-- Logout -->
                 <div class="mt-6 border-t border-gray-200 pt-6">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

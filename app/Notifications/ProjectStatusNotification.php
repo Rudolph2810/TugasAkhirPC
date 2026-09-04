@@ -31,8 +31,18 @@ class ProjectStatusNotification extends Notification
         $url = route('project.detail', $this->project->id);
 
         // Jika status REVISI, arahkan ke halaman fill
-        if ($this->status === ProjectStatusEnum::REVISI) {
+        if ($this->status === ProjectStatusEnum::REVISI || $this->status === ProjectStatusEnum::MENUNGGU_PENGISIAN_PELAKSANA) {
             $url = route('project.fill', $this->project->id);
+        }
+
+        // Jika status MENUNGGU_PENGISIAN_PELAKSANA, arahkan ke halaman fill
+        if ($this->status === ProjectStatusEnum::MENUNGGU_PENGISIAN_PELAKSANA) {
+            $url = route('project.fill', $this->project->id);
+        }
+
+        // Jika status approval, arahkan ke halaman approve
+        if ($this->status->isApprovalStatus()) {
+            $url = route('project.approve', $this->project->id);
         }
 
         return [
@@ -40,37 +50,54 @@ class ProjectStatusNotification extends Notification
             'project_code' => $this->project->code,
             'project_title' => $this->project->title,
             'status' => $this->status->value,
+            'status_label' => $this->status->label(),
             'message' => $message,
             'url' => $url,
             'type' => $this->getNotificationType(),
+            'created_at' => now()->toDateTimeString(),
         ];
     }
 
     private function getMessage(): string
     {
+        $projectCode = $this->project->code;
+        $projectTitle = $this->project->title;
+
         // Jika revisi, tambahkan catatan revisi
         if ($this->status === ProjectStatusEnum::REVISI) {
             $notes = $this->project->revisi_notes ?? 'Tidak ada catatan revisi.';
-            return "📝 Proyek {$this->project->code} memerlukan revisi.\n\nCatatan Revisi:\n{$notes}";
+            return "📝 Proyek **{$projectCode}** - {$projectTitle} memerlukan revisi.\n\n📌 **Catatan Revisi:**\n{$notes}";
         }
 
         return match($this->status) {
-            ProjectStatusEnum::DRAFT_INISIASI => "Proyek baru {$this->project->code} - {$this->project->title} telah diinisiasi dan menunggu review Dept Head Comercil.",
-            ProjectStatusEnum::REVIEW_DEPT_HEAD_COMERCIL => "Proyek {$this->project->code} telah direview Dept Head Comercil. Mohon review oleh Division Head Comercil.",
-            ProjectStatusEnum::REVIEW_DIVISION_HEAD_COMERCIL => "Proyek {$this->project->code} telah disetujui Division Head Comercil. Silakan isi data proyek.",
-            ProjectStatusEnum::MENUNGGU_PENGISIAN_PELAKSANA => "Anda diminta untuk mengisi data proyek {$this->project->code}.",
-            ProjectStatusEnum::REVIEW_DEPT_HEAD_PELAKSANA => "Data proyek {$this->project->code} telah diisi. Mohon review oleh Dept Head Pelaksana.",
-            ProjectStatusEnum::REVIEW_DIVISION_HEAD_PELAKSANA => "Proyek {$this->project->code} telah direview Dept Head Pelaksana. Mohon review oleh Division Head Pelaksana.",
-            ProjectStatusEnum::REVIEW_PCCM => "Proyek {$this->project->code} menunggu review oleh PCCM.",
-            ProjectStatusEnum::REVIEW_DEPT_HEAD_PCCM => "Proyek {$this->project->code} menunggu review oleh Dept Head PCCM.",
-            ProjectStatusEnum::REVIEW_DIVISION_HEAD_PCCM => "Proyek {$this->project->code} menunggu review oleh Division Head PCCM.",
-            ProjectStatusEnum::REVIEW_FINANCE => "Proyek {$this->project->code} menunggu review oleh Finance.",
-            ProjectStatusEnum::REVIEW_DEPT_HEAD_FINANCE => "Proyek {$this->project->code} menunggu review oleh Dept Head Finance.",
-            ProjectStatusEnum::REVIEW_DIVISION_HEAD_FINANCE => "Proyek {$this->project->code} menunggu review oleh Division Head Finance.",
-            ProjectStatusEnum::REVIEW_DIREKSI => "Proyek {$this->project->code} menunggu approval Direksi.",
-            ProjectStatusEnum::RILIS => "🎉 Project Charter {$this->project->code} telah RILIS!",
-            ProjectStatusEnum::DIBATALKAN => "❌ Proyek {$this->project->code} telah dibatalkan.",
-            default => "Status proyek {$this->project->code} berubah menjadi {$this->status->label()}.",
+            // Comercil Flow
+            ProjectStatusEnum::DRAFT_INISIASI => "📋 Proyek baru **{$projectCode}** - {$projectTitle} telah diinisiasi dan menunggu review Anda.",
+            ProjectStatusEnum::REVIEW_DEPT_HEAD_COMERCIL => "📌 Proyek **{$projectCode}** - {$projectTitle} telah direview Dept Head Comercil. Mohon review oleh Division Head Comercil.",
+            ProjectStatusEnum::REVIEW_DIVISION_HEAD_COMERCIL => "✅ Proyek **{$projectCode}** - {$projectTitle} telah disetujui Division Head Comercil. Silakan isi data proyek.",
+            
+            // Pelaksana Flow
+            ProjectStatusEnum::MENUNGGU_PENGISIAN_PELAKSANA => "✏️ Anda diminta untuk mengisi data proyek **{$projectCode}** - {$projectTitle}.",
+            ProjectStatusEnum::REVIEW_DEPT_HEAD_PELAKSANA => "📌 Data proyek **{$projectCode}** - {$projectTitle} telah diisi. Mohon review oleh Dept Head Pelaksana.",
+            ProjectStatusEnum::REVIEW_DIVISION_HEAD_PELAKSANA => "📌 Proyek **{$projectCode}** - {$projectTitle} telah direview Dept Head Pelaksana. Mohon review oleh Division Head Pelaksana.",
+            
+            // PCCM Flow
+            ProjectStatusEnum::REVIEW_PCCM => "🔍 Proyek **{$projectCode}** - {$projectTitle} menunggu review oleh PCCM Staff.",
+            ProjectStatusEnum::REVIEW_DEPT_HEAD_PCCM => "📌 Proyek **{$projectCode}** - {$projectTitle} menunggu review oleh Dept Head PCCM.",
+            ProjectStatusEnum::REVIEW_DIVISION_HEAD_PCCM => "📌 Proyek **{$projectCode}** - {$projectTitle} menunggu review oleh Division Head PCCM.",
+            
+            // Finance Flow
+            ProjectStatusEnum::REVIEW_FINANCE => "💰 Proyek **{$projectCode}** - {$projectTitle} menunggu review oleh Finance Staff.",
+            ProjectStatusEnum::REVIEW_DEPT_HEAD_FINANCE => "📌 Proyek **{$projectCode}** - {$projectTitle} menunggu review oleh Dept Head Finance.",
+            ProjectStatusEnum::REVIEW_DIVISION_HEAD_FINANCE => "📌 Proyek **{$projectCode}** - {$projectTitle} menunggu review oleh Division Head Finance.",
+            
+            // Direksi
+            ProjectStatusEnum::REVIEW_DIREKSI => "🏛️ Proyek **{$projectCode}** - {$projectTitle} menunggu approval Direksi.",
+            
+            // Final
+            ProjectStatusEnum::RILIS => "🎉 **Project Charter {$projectCode}** - {$projectTitle} telah **RILIS**!",
+            ProjectStatusEnum::DIBATALKAN => "❌ Proyek **{$projectCode}** - {$projectTitle} telah dibatalkan.",
+            
+            default => "📢 Status proyek **{$projectCode}** berubah menjadi **{$this->status->label()}**.",
         };
     }
 
@@ -80,6 +107,7 @@ class ProjectStatusNotification extends Notification
             ProjectStatusEnum::RILIS => 'success',
             ProjectStatusEnum::REVISI => 'warning',
             ProjectStatusEnum::DIBATALKAN => 'danger',
+            ProjectStatusEnum::DRAFT_INISIASI => 'info',
             default => 'info',
         };
     }

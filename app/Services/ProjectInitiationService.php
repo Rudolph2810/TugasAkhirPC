@@ -94,6 +94,10 @@ class ProjectInitiationService
             'status' => ProjectStatusEnum::REVIEW_DEPT_HEAD_COMERCIL->value,
             'current_approver_id' => $nextApprover->id,
         ]);
+        $oldStatus = $project->status;
+    // update status...
+    event(new ProjectStatusChanged($project, $oldStatus, $project->status));
+
     }
 
     public function getApproverForRole(RoleEnum $role, ?LevelEnum $level = null): ?User

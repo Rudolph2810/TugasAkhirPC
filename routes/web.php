@@ -13,6 +13,8 @@ use App\Livewire\Admin\LogoSetting;
 use App\Livewire\Rkap\RkapImportExport;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Admin\AdminDashboard;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Gate;
 
 
 /*
@@ -148,6 +150,12 @@ Route::middleware(['auth'])->group(function () {
         // 7.3 Logo Setting
         Route::get('/logo', LogoSetting::class)
             ->name('logo');
+            
+            
+            // Lihat semua notifikasi
+Route::get('/notifications', function () {
+    return view('notifications.index');
+})->name('notifications.all')->middleware('auth');
 
         // ============================================================
         // 8. ADDITIONAL ADMIN ROUTES (Optional - bisa ditambahkan)
@@ -192,36 +200,37 @@ Route::middleware(['auth'])->group(function () {
     // 10. EXPORT RKAP (Excel)
     // ============================================================
     Route::get('/project/{project}/export-rkap', function ($id) {
-        $project = App\Models\Project::findOrFail($id);
+    $project = App\Models\Project::findOrFail($id);
+    
+    if (!Gate::allows('exportRkap', $project)) {
+        abort(403, 'Anda tidak memiliki akses download RKAP untuk proyek ini.');
+    }
+    
+    return Excel::download(new App\Exports\RkapExport($id), 'RKAP_' . $project->code . '.xlsx');
+})->name('project.export-rkap')->middleware('auth');
 
-        if (!\Illuminate\Support\Facades\Gate::allows('exportRkap', $project)) {
-            abort(403, 'Anda tidak memiliki akses download RKAP untuk proyek ini.');
-        }
-
-        return (new App\Exports\RkapExport($id))->download('RKAP_' . $project->code . '.xlsx');
-    })->name('project.export-rkap');
 
     // ============================================================
     // 11. DOWNLOAD RKAP TEMPLATE
     // ============================================================
     Route::get('/download/rkap-template', function () {
-        return (new App\Exports\RkapTemplateExport())->download('template_rkap.xlsx');
-    })->name('download.rkap-template');
+    return Excel::download(new App\Exports\RkapTemplateExport(), 'template_rkap.xlsx');
+})->name('download.rkap-template')->middleware('auth');
 
     // ============================================================
     // 12. PROFILE ROUTES (Optional)
     // ============================================================
     Route::get('/profile', function () {
         return view('profile');
-    })->name('profile');
+    })->name('profile')->middleware('auth');
 
     Route::post('/profile/update', function () {
         // Update profile logic
-    })->name('profile.update');
+    })->name('profile.update')->middleware('auth');
 
     Route::post('/profile/change-password', function () {
         // Change password logic
-    })->name('profile.change-password');
+    })->name('profile.change-password')->middleware('auth');
 
     // ============================================================
     // 13. API ROUTES (Optional - untuk AJAX)

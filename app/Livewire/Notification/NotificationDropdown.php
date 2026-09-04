@@ -20,8 +20,11 @@ class NotificationDropdown extends Component
         $user = auth()->user();
         if ($user) {
             $this->unreadCount = $user->unreadNotifications()->count();
+            
+            // ✅ Gunakan notifikasi() dengan kurung untuk query builder
             $this->notifications = $user->notifications()
                 ->take(10)
+                ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($notification) {
                     $data = $notification->data;

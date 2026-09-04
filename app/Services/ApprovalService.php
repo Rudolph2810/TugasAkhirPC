@@ -53,6 +53,8 @@ class ApprovalService
     {
         $currentStatus = ProjectStatusEnum::from($project->status);
         $nextStatus = $currentStatus->nextStatus();
+        
+
 
         if (!$nextStatus) {
             throw new \Exception('Tahapan approval berikutnya tidak ditemukan untuk status saat ini.');
@@ -78,6 +80,10 @@ class ApprovalService
             'revisi_notes' => null,
             'current_approver_id' => $nextApprover->id,
         ]);
+        $project->refresh();
+        $oldStatus = $project->status;
+    // update status...
+    event(new ProjectStatusChanged($project, $oldStatus, $project->status));
     }
 
     private function handleCancel(Project $project, ?string $notes): void
@@ -139,4 +145,28 @@ class ApprovalService
     {
         return app(ProjectPolicy::class)->approve($user, $project);
     }
+
+    public function getNextApproverLabel(Project $project): ?string
+    {
+        $status = ProjectStatusEnum::from($project->status);
+        $nextStatus = $status->nextStatus();
+        if (!$nextStatus) {
+            return null;
+            }
+            $nextApprover = $this->getApproverByStatus($nextStatus);
+            if (!$nextApprover) {
+                return null;
+                }
+                return $nextApprover->name . ' (' . $nextApprover->role_label . 
+                ($nextApprover->level ? ' - ' . $nextApprover->level_label : '') . ')';
+    }
+    /**
+     * Get next approver for current status
+     */
+    public function getCurrentNextApprover(Project $project): ?User
+    {
+        $status = ProjectStatusEnum::from($project->status);
+        return $this->getApproverByStatus($status);
+    }
+
 }

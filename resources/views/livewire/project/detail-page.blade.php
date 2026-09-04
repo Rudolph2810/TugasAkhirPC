@@ -24,16 +24,6 @@
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        @if($project->status === 'rilis')
-                        <button wire:click="downloadSuratRilis"
-                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm flex items-center transition">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Download Surat Rilis
-                        </button>
-                        @endif
 
                         @if($canFill && ($project->status === 'menunggu_pengisian_pelaksana' || $project->status ===
                         'revisi'))
@@ -70,16 +60,7 @@
                         </a>
                         @endif
 
-                        @if($canExportRkap && $project->rkapItems->isNotEmpty())
-                        <button wire:click="downloadRkap"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm flex items-center transition">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Download RKAP
-                        </button>
-                        @endif
+
 
                         <!-- Back Button -->
                         <a href="{{ route('dashboard') }}"
@@ -140,6 +121,7 @@
                         <span class="text-sm text-gray-500">Catatan Revisi</span>
                         <p class="mt-1 p-3 bg-yellow-50 rounded-md text-yellow-800">{{ $project->revisi_notes }}</p>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

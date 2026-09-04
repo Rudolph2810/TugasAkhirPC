@@ -1,6 +1,7 @@
+@section('title', 'Inisiasi Proyek Baru')
 <div>
     <!-- ✅ TEST MARKER - Pastikan ini muncul -->
-    < <div class="py-12">
+    <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -251,75 +252,77 @@
                 </div>
             </div>
         </div>
-</div>
+    </div>
 
-<!-- Success Modal -->
-@if($showSuccessModal && $createdProject)
-<div
-    class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-    <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-        <div class="text-center">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-                <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-            </div>
-            <h3 class="mt-4 text-xl font-bold text-gray-900">Proyek Berhasil Diinisiasi!</h3>
-
-            <div class="mt-2">
-                <p class="text-sm text-gray-500">
-                    Proyek <strong class="text-blue-600">{{ $createdProject->code }}</strong>
-                </p>
-                <p class="text-sm text-gray-500">
-                    {{ $createdProject->title }}
-                </p>
-            </div>
-
-            <!-- ✅ Informasi Auto Approve -->
-            <div class="mt-3 p-3 bg-blue-50 rounded-lg">
-                <div class="flex items-center justify-center">
-                    <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <!-- Success Modal -->
+    @if($showSuccessModal && $createdProject)
+    <div
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+                    <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span class="text-sm font-medium text-blue-700">✅ Otomatis disetujui oleh Anda</span>
                 </div>
-                <p class="text-xs text-blue-600 mt-1">
-                    Proyek telah otomatis masuk ke approval Dept Head Comercil
-                </p>
-            </div>
+                <h3 class="mt-4 text-xl font-bold text-gray-900">Proyek Berhasil Diinisiasi!</h3>
 
-            <div class="mt-3 p-3 bg-yellow-50 rounded-lg">
-                <p class="text-sm text-gray-700">
-                    Status: <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Menunggu Review
-                        Dept Head Comercil</span>
-                </p>
-            </div>
+                <div class="mt-2">
+                    <p class="text-sm text-gray-500">
+                        Proyek <strong class="text-blue-600">{{ $createdProject->code }}</strong>
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        {{ $createdProject->title }}
+                    </p>
+                </div>
 
-            <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3">
-                <button wire:click="goToDashboard"
-                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
-                    Ke Dashboard
-                </button>
-                <button wire:click="goToDetail" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                    Lihat Detail Proyek
-                </button>
+                <!-- ✅ Informasi Auto Approve -->
+                <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-sm font-medium text-blue-700">✅ Otomatis disetujui oleh Anda</span>
+                    </div>
+                    <p class="text-xs text-blue-600 mt-1">
+                        Proyek telah otomatis masuk ke approval Dept Head Comercil
+                    </p>
+                </div>
+
+                <div class="mt-3 p-3 bg-yellow-50 rounded-lg">
+                    <p class="text-sm text-gray-700">
+                        Status: <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Menunggu
+                            Review
+                            Dept Head Comercil</span>
+                    </p>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3">
+                    <button wire:click="goToDashboard"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                        Ke Dashboard
+                    </button>
+                    <button wire:click="goToDetail"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Lihat Detail Proyek
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-@endif
+    @endif
 
-<!-- Flash Messages -->
-@if(session()->has('success'))
-<div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-    {{ session('success') }}
-</div>
-@endif
+    <!-- Flash Messages -->
+    @if(session()->has('success'))
+    <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        {{ session('success') }}
+    </div>
+    @endif
 
-@if(session()->has('error'))
-<div class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-    {{ session('error') }}
-</div>
-@endif
+    @if(session()->has('error'))
+    <div class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        {{ session('error') }}
+    </div>
+    @endif
 </div>
