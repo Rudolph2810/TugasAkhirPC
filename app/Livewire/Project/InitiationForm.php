@@ -10,6 +10,8 @@ use App\Services\ProjectInitiationService;
 use App\Enums\ProjectStatusEnum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Models\ProjectType;
+use App\Models\SegmentCode;
 use App\Enums\RoleEnum;
 use App\Enums\LevelEnum;
 
@@ -22,11 +24,14 @@ class InitiationForm extends Component
     public $projectCode;
     public $title;
     public $client;
+    public $nama_manager;
     public $businessSegmentId;
     public $location;
     public $startDate;
     public $endDate;
     public $contractValue;
+    public $projectType;
+    public $segmentCode;
 
     // Attachments
     public $attachments = [];
@@ -41,9 +46,25 @@ class InitiationForm extends Component
     public $createdProject = null;
     public $autoApproved = false;
 
+    public $jenisProyek = [
+    'Internal' => 'I',
+    'Eksternal' => 'E',
+    // tambahkan sesuai kebutuhan
+    ];
+    public $kodeSegmen = [
+    'DESIGN & BUILD' => 'DB',
+    'ASSET MANAGEMENT' => 'AM',
+    'TRANSPORTASI' => 'TR',
+    'BUILDING MANAGEMENT' => 'BD',
+    'EXECUTIVE LOUNGE' => 'EL',
+    // tambahkan sesuai kebutuhan
+    ];
+
+
     protected $rules = [
         'projectCode' => 'required|string|unique:projects,code|max:50',
         'title' => 'required|string|max:255',
+        'nama_manager' => 'nullable|string|max:255',
         'client' => 'required|string|max:255',
         'businessSegmentId' => 'required|exists:business_segments,id',
         'location' => 'required|string|max:500',
@@ -99,25 +120,28 @@ class InitiationForm extends Component
 
     public function generateProjectCode()
     {
-        $year = date('Y');
-        $lastProject = Project::whereYear('created_at', $year)
-            ->orderBy('id', 'desc')
-            ->first();
-        
-        if ($lastProject) {
-            $lastNumber = intval(substr($lastProject->code, -4));
-            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        } else {
-            $newNumber = '0001';
-        }
-        
-        $this->projectCode = 'PROJ-' . $year . '-' . $newNumber;
+        $typeCode = $this->projectType ? ProjectType::find($this->projectType)?->code : 'XX';
+    $segCode = $this->segmentCode ? SegmentCode::find($this->segmentCode)?->code : 'XX';
+    $date = now()->format('dmY');
+    
+    $baseCode = $typeCode . '-' . $segCode . '-' . $date;
+    $counter = 1;
+    $newCode = $baseCode;
+    
+    while (Project::where('code', $newCode)->exists()) {
+        $newCode = $baseCode . '-' . str_pad($counter, 2, '0', STR_PAD_LEFT);
+        $counter++;
+    }
+    
+    $this->projectCode = $newCode;
     }
 
     public function render()
     {
         return view('livewire.project.initiation-form', [
-            'businessSegments' => BusinessSegment::where('is_active', true)->orderBy('name')->get(),
+        'businessSegments' => BusinessSegment::where('is_active', true)->orderBy('name')->get(),
+        'projectTypes' => ProjectType::where('is_active', true)->orderBy('name')->get(),
+        'segmentCodes' => SegmentCode::where('is_active', true)->orderBy('name')->get()   
         ])->layout('layouts.app');
     }
 
@@ -152,8 +176,8 @@ class InitiationForm extends Component
 
     // ============ SAVE ============
     public function save()
-{
-    $this->isSubmitting = true;
+    {
+        $this->isSubmitting = true;
     
     try {
         $this->validate();
@@ -161,8 +185,11 @@ class InitiationForm extends Component
         // 1. Buat proyek dulu
         $project = Project::create([
             'code' => $this->projectCode,
+            'jenis_proyek' => $this->projectType ?? null,
+            'kode_segmen' => $this->segmentCode ?? null,
             'title' => $this->title,
             'client' => $this->client,
+            'nama_manager' => $this->nama_manager,
             'business_segment_id' => $this->businessSegmentId,
             'location' => $this->location,
             'start_date' => $this->startDate,
@@ -234,6 +261,7 @@ class InitiationForm extends Component
         $this->reset([
             'title',
             'client',
+            'nama_manager',
             'businessSegmentId',
             'location',
             'startDate',
@@ -250,6 +278,7 @@ class InitiationForm extends Component
         $this->showSuccessModal = false;
         $this->createdProject = null;
         $this->autoApproved = false;
+        $this->nama_manager = '';
     }
 
     public function goToDashboard()
@@ -264,4 +293,13 @@ class InitiationForm extends Component
         }
         return redirect()->route('dashboard');
     }
+    public function updatedJenisProyek()
+{
+    $this->generateProjectCode();
+}
+
+public function updatedKodeSegmen()
+{
+    $this->generateProjectCode();
+}
 }

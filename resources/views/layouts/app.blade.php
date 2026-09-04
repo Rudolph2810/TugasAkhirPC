@@ -60,7 +60,7 @@
                     <div class="flex items-center space-x-4">
                         @livewire('notification.notification-dropdown')
                         <!-- Profile Dropdown -->
-                        <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                        <div class="relative hover:bg-gray-100" x-data="{ open: false }" @click.away="open = false">
                             <button @click="open = !open"
                                 class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 <div
@@ -72,7 +72,7 @@
                             <div x-show="open" x-transition:enter="transition ease-out duration-100"
                                 x-transition:enter-start="transform opacity-0 scale-95"
                                 x-transition:enter-end="transform opacity-100 scale-100"
-                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50">
+                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50 ">
                                 <!-- User Info -->
                                 <div class="px-4 py-2 border-b border-gray-200">
                                     <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
@@ -84,7 +84,7 @@
                                 <div class="py-1">
 
                                     <a href="{{ route('profile') }}"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">
+                                        class="block px-4 py-2 text-sm text-gray-700  hover:bg-blue-300">
                                         <svg class="inline w-4 h-4 mr-2" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -125,11 +125,11 @@
                 @endif
             </main>
 
-            @auth
-            @include('components.footer')
-            @endauth
         </div>
     </div>
+    @auth
+    @include('components.footer')
+    @endauth
 
     @livewireScripts
     @stack('scripts')

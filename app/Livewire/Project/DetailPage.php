@@ -60,6 +60,7 @@ class DetailPage extends Component
 
     public function render()
     {
+        
         $canApprove = Gate::allows('approve', $this->project);
 
         return view('livewire.project.detail-page', [

@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Department;
 use App\Models\Division;
 use App\Models\BusinessSegment;
+use App\Models\ProjectType;
+use App\Models\SegmentCode;
 use App\Enums\RoleEnum;
 use App\Enums\LevelEnum;
 
@@ -28,6 +30,11 @@ class DatabaseSeeder extends Seeder
         // 3. CREATE BUSINESS SEGMENTS
         // ============================================================
         $this->createBusinessSegments();
+
+        // ✅ TAMBAHKAN INI: CREATE PROJECT TYPES & SEGMENT CODES
+    // ============================================================
+        $this->createProjectTypes();
+        $this->createSegmentCodes();
 
         // ============================================================
         // 4. CREATE USERS
@@ -100,13 +107,54 @@ class DatabaseSeeder extends Seeder
         $segments = [
             ['name' => 'ASSET MANAGEMENT', 'code' => 'AM'],
             ['name' => 'FACILITY MANAGEMENT', 'code' => 'AM'],
-            ['name' => 'TRANSPORTAS', 'code' => 'TR'],
+            ['name' => 'TRANSPORTASI', 'code' => 'TR'],
             ['name' => 'DESIGN & BUILD', 'code' => 'DB'],
             ['name' => 'ENTREPRENEURIAL REAL ESTATE', 'code' => 'ERS'],
         ];
 
         foreach ($segments as $segment) {
             BusinessSegment::create($segment);
+        }
+    }
+
+    // ============================================================
+    // CREATE PROJECT TYPES
+
+     private function createProjectTypes(): void
+    {
+        $types = [
+            ['name' => 'Internal', 'code' => 'I'],
+            ['name' => 'Eksternal', 'code' => 'E'],
+            
+        ];
+
+        foreach ($types as $type) {
+            ProjectType::updateOrCreate(
+                ['code' => $type['code']],
+                ['name' => $type['name'], 'is_active' => true]
+            );
+        }
+    }
+    
+
+    // ============================================================
+    // ✅ CREATE SEGMENT CODES (KODE SEGMEN)
+    // ============================================================
+    private function createSegmentCodes(): void
+    {
+        $segments = [
+            ['name' => 'DESIGN & BUILD', 'code' => 'DB'],
+            ['name' => 'BUILDING MANAGEMENT', 'code' => 'BM'],
+            ['name' => 'EXECUTIVE LOUNGE', 'code' => 'EL'],
+            ['name' => 'TRANSPORTASI', 'code' => 'TR'],
+            
+        ];
+
+        foreach ($segments as $segment) {
+            SegmentCode::updateOrCreate(
+                ['code' => $segment['code']],
+                ['name' => $segment['name'], 'is_active' => true]
+            );
         }
     }
 

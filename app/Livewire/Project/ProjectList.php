@@ -16,12 +16,14 @@ class ProjectList extends Component
     public $statusFilter = '';
     public $yearFilter = '';
     public $clientFilter = '';
+    public $managerFilter = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
         'yearFilter' => ['except' => ''],
         'clientFilter' => ['except' => ''],
+        'managerFilter' => ['except' => '']
     ];
 
     public function render()
@@ -31,7 +33,8 @@ class ProjectList extends Component
             ->when($this->search, function ($query) {
                 $query->where('code', 'like', "%{$this->search}%")
                     ->orWhere('title', 'like', "%{$this->search}%")
-                    ->orWhere('client', 'like', "%{$this->search}%");
+                    ->orWhere('client', 'like', "%{$this->search}%")
+                    ->orWhere('nama_manager', 'like', "%{$this->search}%");
             })
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
@@ -41,6 +44,9 @@ class ProjectList extends Component
             })
             ->when($this->clientFilter, function ($query) {
                 $query->where('client', 'like', "%{$this->clientFilter}%");
+            })
+            ->when($this->managerFilter, function ($query) {
+                $query->where('nama_manager', 'like', "%{$this->managerFilter}%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate(15);

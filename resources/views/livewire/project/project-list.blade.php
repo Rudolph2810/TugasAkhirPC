@@ -47,10 +47,14 @@
             </div>
 
             <!-- Filter -->
-            <div class="bg-white rounded-lg shadow p-4 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
-                        <input wire:model.live="search" type="text" placeholder="Cari proyek..."
+                        <input wire:model.live="search" type="text" placeholder="Cari kode proyek..."
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <input wire:model.live="managerFilter" type="text" placeholder="Cari manager..."
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
                     <div>
@@ -91,23 +95,26 @@
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
+
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Judul</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Manager</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($projects as $index => $project)
-                            <tr class="hover:bg-gray-50">
+                            <tr class="hover:bg-blue-100 transition {{ $loop->even ? 'bg-white' : 'bg-gray-100' }}">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $loop->iteration + ($projects->currentPage() - 1) * $projects->perPage() }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <td class=" px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                     {{ $project->code }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
@@ -115,6 +122,9 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $project->client }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $project->nama_manager ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
@@ -126,7 +136,7 @@
                                     <div class="flex flex-wrap gap-1">
                                         <!-- Detail Button -->
                                         <a href="{{ route('project.detail', $project->id) }}"
-                                            class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition text-xs font-medium">
+                                            class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-green-100 px-3 py-1 rounded-md transition text-xs font-medium">
                                             Detail
                                         </a>
 

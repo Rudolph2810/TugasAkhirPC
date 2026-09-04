@@ -144,6 +144,7 @@ return [
     'redis' => [
 
         'client' => env('REDIS_CLIENT', 'phpredis'),
+        'nama_manager' => env('REDIS_NAMA_MANAGER', 'phpredis'),
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),

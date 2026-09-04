@@ -18,8 +18,12 @@ class ProjectInitiationService
         // 1. Buat proyek
         $project = Project::create([
             'code' => $data['projectCode'],
+            'jenis_proyek' => $data['jenisProyek'] ?? null,
+            'kode_segmen' => $data['kodeSegmen'] ?? null,
+
             'title' => $data['title'],
             'client' => $data['client'],
+            'nama_manager' => $data['nama_manager'],
             'business_segment_id' => $data['businessSegmentId'],
             'location' => $data['location'],
             'start_date' => $data['startDate'],

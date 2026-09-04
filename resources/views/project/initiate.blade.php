@@ -36,6 +36,35 @@
                             Data Proyek
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Jenis Proyek -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Jenis Proyek <span
+                                        class="text-red-500">*</span></label>
+                                <select wire:model.live="projectType"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Jenis Proyek</option>
+                                    @foreach($projectTypes as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}
+                                        ({{ $type->code }})</option>
+                                    @endforeach
+                                </select>
+                                @error('projectType') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Kode Segmen -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Segmen Proyek <span
+                                        class="text-red-500">*</span></label>
+                                <select wire:model.live="segmentCode"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Segmen</option>
+                                    @foreach($segmentCodes as $seg)
+                                    <option value="{{ $seg->id }}">{{ $seg->name }}
+                                        ({{ $seg->code }})</option>
+                                    @endforeach
+                                </select>
+                                @error('kodeSegmen') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
                             <!-- Kode Proyek -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">

@@ -14,6 +14,7 @@ class Project extends Model
         'code',
         'title',
         'client',
+        'nama_manager',
         'business_segment_id',
         'location',
         'start_date',
@@ -113,7 +114,8 @@ class Project extends Model
     {
         return $query->where('code', 'LIKE', "%{$search}%")
             ->orWhere('title', 'LIKE', "%{$search}%")
-            ->orWhere('client', 'LIKE', "%{$search}%");
+            ->orWhere('client', 'LIKE', "%{$search}%")
+            ->orWhere('nama_manager', 'LIKE', "%{$search}%"); // Added search by nama_manager
     }
 
     // Helper methods

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('current_approver_id')->nullable()->constrained('users')->nullOnDelete();
             $table->text('revisi_notes')->nullable();
             $table->timestamp('released_at')->nullable();
+            $table->string('nama_manager')->nullable();
             $table->timestamps();
         });
     }

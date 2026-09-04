@@ -82,8 +82,12 @@
                 <h3 class="text-lg font-semibold text-gray-700 mb-4">Informasi Proyek</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
-                        <span class="text-sm text-gray-500">Client</span>
+                        <span class="text-sm text-gray-500">Pemilik Proyek</span>
                         <p class="font-medium">{{ $project->client }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Manager Proyek</span>
+                        <p class="font-medium">{{ $project->nama_manager ?? '-' }}</p>
                     </div>
                     <div>
                         <span class="text-sm text-gray-500">Segmen Bisnis</span>
@@ -150,6 +154,12 @@
                     <div>
                         <span class="text-sm text-gray-500">Deliverables</span>
                         <div class="mt-1 p-3 bg-gray-50 rounded-md">{{ $project->detail->deliverables }}</div>
+                    </div>
+                    @endif
+                    @if($project->detail->rkap_items)
+                    <div>
+                        <span class="text-sm text-gray-500">Rkap Items</span>
+                        <div class="mt-1 p-3 bg-gray-50 rounded-md">{{ $project->detail->rkap_items }}</div>
                     </div>
                     @endif
                 </div>

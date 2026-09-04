@@ -18,6 +18,35 @@
                                     class="bg-blue-100 text-blue-700 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-2">1</span>
                                 Data Proyek
                             </h3>
+                            <!-- Jenis Proyek -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Jenis Proyek <span
+                                        class="text-red-500">*</span></label>
+                                <select wire:model.live="projectType"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Jenis Proyek</option>
+                                    @foreach($projectTypes as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}
+                                        ({{ $type->code }})</option>
+                                    @endforeach
+                                </select>
+                                @error('projectType') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Kode Segmen -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Segmen Proyek <span
+                                        class="text-red-500">*</span></label>
+                                <select wire:model.live="segmentCode"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Segmen</option>
+                                    @foreach($segmentCodes as $seg)
+                                    <option value="{{ $seg->id }}">{{ $seg->name }}
+                                        ({{ $seg->code }})</option>
+                                    @endforeach
+                                </select>
+                                @error('kodeSegmen') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Kode Proyek -->
                                 <div>
@@ -40,6 +69,7 @@
                                     @enderror
                                 </div>
 
+
                                 <!-- Judul Pekerjaan -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">
@@ -61,6 +91,19 @@
                                         placeholder="Masukkan nama client">
                                     @error('client') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                                 </div>
+                                <!-- Nama Manager -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">
+                                        Nama Manager <span class="text-red-500">*</span>
+                                    </label>
+                                    <input wire:model="nama_manager" type="text"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Masukkan nama manager">
+                                    @error('nama_manager') <span class="text-red-600 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+
 
                                 <!-- Segmen Bisnis -->
                                 <div>

@@ -60,7 +60,7 @@ if (!function_exists('get_logo')) {
         } elseif ($hour >= 18 && $hour < 24) {
             return 'Selamat Malam';
         } else {
-            return 'Selamat Malam'; // 00:00 - 04:59
+            return 'Selamat Dini Hari'; // 00:00 - 04:59
         }
     }
 }
