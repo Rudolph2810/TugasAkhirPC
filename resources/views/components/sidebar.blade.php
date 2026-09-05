@@ -3,7 +3,7 @@
     <!-- Logo -->
     <div class="p-4 border-b border-gray-700 flex items-center justify-center">
 
-        <img src="{{ asset('storage/logo/logo.jpg') }}" alt="Logo" class="h-50 w-30">
+        <img src="{{ asset('logo/logo.jpg') }}" alt="Logo" class="h-50 w-30">
 
     </div>
 
@@ -18,12 +18,12 @@
     <nav class="flex-1 p-4 space-y-2">
         <a href="{{ route('dashboard') }}"
             class="flex items-center px-4 py-3 text-gray-300 hover:bg-blue-700 rounded-lg transition {{ request()->routeIs('dashboard') ? 'bg-gray-700 text-white' : '' }}">
-            <img src="{{asset('storage/logo/dashboard.png')}}" alt="" class="w-5 h-5 mr-3 rounded-full">
+            <img src="{{asset('logo/dashboard.png')}}" alt="" class="w-5 h-5 mr-3 rounded-full">
             Dashboard
         </a>
         <a href="{{ route('profile') }}"
             class="flex items-center px-4 py-3 text-gray-300 hover:bg-blue-700 rounded-lg transition {{ request()->routeIs('profile') ? 'bg-gray-700 text-white' : '' }}">
-            <img src="{{asset('storage/logo/profile.jpg')}}" alt="" class="w-5 h-5 mr-3 rounded-full">
+            <img src="{{asset('logo/profile.jpg')}}" alt="" class="w-5 h-5 mr-3 rounded-full">
             Profil
         </a>
 

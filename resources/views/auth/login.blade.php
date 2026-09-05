@@ -15,7 +15,7 @@
             <div class="max-w-md w-full space-y-8">
                 <div>
                     <div class="flex justify-center">
-                        <img src="{{ asset('storage/logo/logo.jpg') }}" alt="Logo" class="h-900 w-auto"
+                        <img src="{{ asset('logo/logo.jpg') }}" alt="Logo" class="h-900 w-auto"
                             onerror="this.src='https://placehold.co/200x80?text=Logo'">
                     </div>
                     <h2 class="mt-6 text-center text-2xl font-bold text-gray-900">
