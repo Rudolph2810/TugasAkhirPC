@@ -6,14 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $title ?? 'Project Charter Management')</title>
-    @php
-    $viteManifest = public_path('build/manifest.json');
-    $hasViteBuild = file_exists($viteManifest);
-    @endphp
-
-    @if ($hasViteBuild)
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
     @livewireStyles
 </head>
 
