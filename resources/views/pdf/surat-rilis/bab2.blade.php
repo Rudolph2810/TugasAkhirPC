@@ -5,6 +5,10 @@
 
     <table class="content-table">
         <tr>
+            <td class="label">Nama Manager</td>
+            <td>{{ $project->manager }}</td>
+        </tr>
+        <tr>
             <td class="label">Nama Proyek</td>
             <td>{{ $project->title }}</td>
         </tr>
