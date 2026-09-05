@@ -17,6 +17,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 
 RUN composer install \
+    --no-dev \
     --optimize-autoloader \
     --no-scripts \
     --no-interaction
@@ -32,8 +33,12 @@ RUN mkdir -p \
 
 RUN chmod -R 775 storage bootstrap/cache
 
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+COPY Caddyfile /etc/frankenphp/Caddyfile
+
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
 
 EXPOSE 8080
+
+CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
