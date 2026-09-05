@@ -2,6 +2,7 @@ FROM dunglas/frankenphp:php8.3
 
 RUN install-php-extensions \
     gd \
+    zip \
     pdo_mysql \
     mbstring \
     exif \
