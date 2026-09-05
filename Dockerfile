@@ -1,0 +1,36 @@
+FROM dunglas/frankenphp:php8.3
+
+RUN install-php-extensions \
+    gd \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    opcache
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+
+RUN composer install \
+    --optimize-autoloader \
+    --no-scripts \
+    --no-interaction
+
+COPY . .
+
+RUN mkdir -p \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/logs \
+    bootstrap/cache
+
+RUN chmod -R 775 storage bootstrap/cache
+
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
