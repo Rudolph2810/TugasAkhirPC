@@ -1,5 +1,5 @@
 # =========================
-# Stage 1: Build frontend
+# Stage 1: Build Vite
 # =========================
 FROM node:22-alpine AS frontend
 
@@ -12,13 +12,12 @@ RUN npm ci
 COPY resources ./resources
 COPY vite.config.js ./
 COPY postcss.config.js ./
-COPY tailwind.config.js ./
 
 RUN npm run build
 
 
 # =========================
-# Stage 2: Laravel
+# Stage 2: Laravel + FrankenPHP
 # =========================
 FROM dunglas/frankenphp:php8.3
 
@@ -46,7 +45,7 @@ RUN composer install \
 
 COPY . .
 
-# Copy hasil Vite build
+# Ambil hasil build Vite dari stage frontend
 COPY --from=frontend /app/public/build ./public/build
 
 RUN mkdir -p \
